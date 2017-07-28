@@ -1,0 +1,15 @@
+---
+# defaults file for restic
+#
+restic_download_url: 'https://github.com/restic/restic/releases/download/v0.7.1/restic_0.7.1_linux_amd64.bz2'
+restic_repository_path: '/var/backup'
+restic_password: 'Entrata@01'
+restic_cron_enable: no 
+restic_cron_minute: '*'  
+restic_cron_hour: '*'
+restic_cron_day: '*'
+restic_cron_month: '*'
+restic_cron_weekday: '*'
+restic_backup_items: 
+  - "restic backup /var/ossec --tag ossec"
+  - "restic forget --tag ossec --keep-daily 7 --keep-weekly 5 --keep-monthly 7 --prune"

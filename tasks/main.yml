@@ -1,0 +1,60 @@
+---
+# tasks file for restic
+- name: Install requirements
+  yum: state=latest name={{ item }}
+  with_items:
+    - bzip2
+- name: download restic
+  get_url:
+    url: '{{ restic_download_url }}'
+    dest: /tmp/restic.bz2
+    force: yes
+- name: unpack restic
+  shell: bzip2 -cd restic.bz2 > /usr/local/bin/restic
+  args:
+    chdir: /tmp/
+- name: change restic file mode
+  file:
+    path: /usr/local/bin/restic
+    mode: "u=xrw"    
+- name: Adding restic_repository enviroment variable
+  lineinfile: 
+    dest: '/root/.bashrc'
+    regexp: '^export RESTIC_REPOSITORY'     
+    line: 'export RESTIC_REPOSITORY={{ restic_repository_path }}' 
+    insertafter: 'EOF' 
+    state: present    
+- name: Adding restic_password enviroment variable
+  lineinfile: 
+    dest: '/root/.bashrc'
+    regexp: '^export RESTIC_PASSWORD'     
+    line: 'export RESTIC_PASSWORD={{ restic_password }}' 
+    insertafter: 'EOF' 
+    state: present       
+- name: Initialize restic repository
+  shell: restic init
+  ignore_errors: yes
+  register: restic_init
+- name: debug restic init success
+  debug:
+    msg: "{{ restic_init.stdout_lines }}"
+- name: debug restic init error
+  debug:
+    msg: "{{ restic_init.stderr_lines }}"    
+- name: copy backup script file
+  template:
+    src: templates/restic_backup.sh.j2
+    dest: /root/restic_backup.sh
+    owner: root
+    group: root
+    mode: 0700
+- name: set cron snapshots
+  cron:
+    name: "Restic Snapshot"
+    minute: "{{ restic_cron_minute }}"
+    hour: "{{ restic_cron_hour }}"
+    day: "{{ restic_cron_day }}"
+    month: "{{ restic_cron_month }}"
+    weekday: "{{ restic_cron_weekday }}"
+    job: 'bash /root/restic_backup.sh >> /tmp/restic.log'    
+  when: restic_cron_enable

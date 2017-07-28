@@ -1,0 +1,6 @@
+#!/bin/sh
+source "/root/.bashrc"
+export PATH=$PATH:/usr/local/bin
+{% for backup_item in restic_backup_items %}
+{{ backup_item }}
+{% endfor %}
