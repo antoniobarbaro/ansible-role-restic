@@ -6,7 +6,7 @@
     - bzip2
 - name: download restic
   get_url:
-    url: '{{ restic_download_url }}'
+    url: '{{ restic_download_url }}v{{ restic_version }}/restic_{{ restic_version }}_linux_amd64.bz2'
     dest: /tmp/restic.bz2
     force: yes
 - name: unpack restic

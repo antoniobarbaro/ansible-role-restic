@@ -1,7 +1,7 @@
 ---
 # defaults file for restic
-#
-restic_download_url: 'https://github.com/restic/restic/releases/download/v0.7.1/restic_0.7.1_linux_amd64.bz2'
+restic_version: '0.9.3'
+restic_download_url: 'https://github.com/restic/restic/releases/download/'
 restic_repository_path: '/var/backup'
 restic_password: 'Entrata@01'
 restic_cron_enable: no 
