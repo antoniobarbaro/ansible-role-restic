@@ -31,6 +31,27 @@
     line: 'export RESTIC_PASSWORD={{ restic_password }}' 
     insertafter: 'EOF' 
     state: present       
+- name: Adding restic_aws_access_key enviroment variable
+  lineinfile: 
+    dest: '/root/.bashrc'
+    regexp: '^export AWS_ACCESS_KEY_ID'     
+    line: 'export AWS_ACCESS_KEY_ID={{ restic_aws_access_key }}' 
+    insertafter: 'EOF' 
+    state: present       
+- name: Adding restic_aws_secret_key enviroment variable
+  lineinfile: 
+    dest: '/root/.bashrc'
+    regexp: '^export AWS_SECRET_ACCESS_KEY'     
+    line: 'export AWS_SECRET_ACCESS_KEY={{ restic_aws_secret_key }}' 
+    insertafter: 'EOF' 
+    state: present       
+- name: Adding restic_aws_default_region enviroment variable
+  lineinfile: 
+    dest: '/root/.bashrc'
+    regexp: '^export AWS_DEFAULT_REGION'     
+    line: 'export AWS_DEFAULT_REGION={{ restic_aws_default_region }}' 
+    insertafter: 'EOF' 
+    state: present                   
 - name: Initialize restic repository
   shell: restic init
   ignore_errors: yes

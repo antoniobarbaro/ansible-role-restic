@@ -13,3 +13,8 @@ restic_cron_weekday: '*'
 restic_backup_items: 
   - "restic backup /var/ossec --tag ossec"
   - "restic forget --tag ossec --keep-daily 7 --keep-weekly 5 --keep-monthly 7 --prune"
+# s3 repository  
+#restic_repository_path: 's3:s3.amazonaws.com/backup-cloud-betgroup-it/restic'  
+restic_aws_access_key: ''
+restic_aws_secret_key: ''
+restic_aws_default_region: 'eu-west-1'
