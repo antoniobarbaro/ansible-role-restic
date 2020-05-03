@@ -1,6 +1,6 @@
 #!/bin/sh
 source "/root/.bashrc"
-export PATH=$PATH:/usr/local/bin
+export PATH=$PATH:{{ restic_install_path }}
 export RESTIC_REPOSITORY={{ restic_repository_path }}
 export RESTIC_PASSWORD={{ restic_password }}
 export AWS_ACCESS_KEY_ID={{ restic_aws_access_key }}
