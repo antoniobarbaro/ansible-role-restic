@@ -1,22 +1,27 @@
 ---
 # tasks file for restic
 - name: Install requirements
-  yum: state=latest name={{ item }}
-  with_items:
-    - bzip2
+  yum: 
+    state: present 
+    name: bzip2
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 - name: download restic
   get_url:
-    url: '{{ restic_download_url }}v{{ restic_version }}/restic_{{ restic_version }}_linux_amd64.bz2'
-    dest: /tmp/restic.bz2
+    url: '{{ restic_download_url }}v{{ restic_version }}/restic_{{ restic_version }}_{{ restic_os_type }}.bz2'
+    dest: '{{ restic_install_path }}/restic.bz2'
     force: yes
 - name: unpack restic
-  shell: bzip2 -cd restic.bz2 > /usr/local/bin/restic
+  shell: 'bzip2 -cd restic.bz2 > {{ restic_install_path }}/restic'
   args:
-    chdir: /tmp/
+    chdir: '{{ restic_install_path }}'
 - name: change restic file mode
   file:
-    path: /usr/local/bin/restic
+    path: '{{ restic_install_path }}/restic'
     mode: "u=xrw"    
+- name: delete restic download file
+  file:
+    path: '{{ restic_install_path }}/restic.bz2'
+    state: absent
 - name: Adding restic_repository enviroment variable
   lineinfile: 
     dest: '/root/.bashrc'
@@ -51,10 +56,20 @@
     regexp: '^export AWS_DEFAULT_REGION'     
     line: 'export AWS_DEFAULT_REGION={{ restic_aws_default_region }}' 
     insertafter: 'EOF' 
-    state: present                   
+    state: present      
+- name: Creates repository directory
+  file:
+    path: '{{ restic_repository_path }}'
+    state: directory
 - name: Initialize restic repository
   shell: restic init
   ignore_errors: yes
+  environment:
+    RESTIC_REPOSITORY: '{{ restic_repository_path }}'
+    RESTIC_PASSWORD: '{{ restic_password }}'
+    AWS_ACCESS_KEY_ID: '{{ restic_aws_access_key }}' 
+    AWS_SECRET_ACCESS_KEY: '{{ restic_aws_secret_key }}'
+    AWS_DEFAULT_REGION: '{{ restic_aws_default_region }}' 
   register: restic_init
 - name: debug restic init success
   debug:
@@ -77,5 +92,5 @@
     day: "{{ restic_cron_day }}"
     month: "{{ restic_cron_month }}"
     weekday: "{{ restic_cron_weekday }}"
-    job: 'bash /root/restic_backup.sh >> /tmp/restic.log'    
+    job: 'bash /root/restic_backup.sh >> {{ restic_cron_logfile }}'    
   when: restic_cron_enable
