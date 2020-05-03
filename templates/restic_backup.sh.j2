@@ -1,6 +1,11 @@
 #!/bin/sh
 source "/root/.bashrc"
 export PATH=$PATH:/usr/local/bin
+export RESTIC_REPOSITORY={{ restic_repository_path }}
+export RESTIC_PASSWORD={{ restic_password }}
+export AWS_ACCESS_KEY_ID={{ restic_aws_access_key }}
+export AWS_SECRET_ACCESS_KEY={{ restic_aws_secret_key }}
+export AWS_DEFAULT_REGION={{ restic_aws_default_region }}
 {% for backup_item in restic_backup_items %}
 {{ backup_item }}
 {% endfor %}
